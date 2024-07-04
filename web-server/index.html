@@ -1,0 +1,37 @@
+<!doctype html>
+<head> </head>
+<body>
+	<iframe
+		on
+		id="imageFrame"
+		src="editor.html"
+		width="1080"
+		height="1080"
+		style="overflow: hidden"
+		scrolling="no"
+		frameborder="0"
+		onload="setup();"
+	></iframe>
+
+	<button onclick="window.sendEditorMessage('hello world from js')">
+		click me
+	</button>
+
+	<script>
+		function setup() {
+			//callback when ebitengine started
+			function booted(sendEditorMessage) {
+				window.sendEditorMessage = sendEditorMessage;
+			}
+
+			window.onEditorMessage = function (message) {
+				console.log(message);
+			};
+
+			//start ebitengine
+			document
+				.getElementById("imageFrame")
+				.contentWindow.boot(booted, window.onEditorMessage);
+		}
+	</script>
+</body>

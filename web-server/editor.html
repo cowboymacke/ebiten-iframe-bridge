@@ -1,0 +1,30 @@
+<script src="https://cdn.jsdelivr.net/gh/golang/go@go1.22.5/misc/wasm/wasm_exec.js"></script>
+<script>
+	window.boot = function (booted, callback) {
+		//setup callback for js
+		window.onEditorMessage = function (value) {
+			callback(value);
+		};
+
+		//call booted from mainview
+		window.booted = function () {
+			booted(window.sendEditorMessage);
+		};
+
+		// Polyfill
+		if (!WebAssembly.instantiateStreaming) {
+			WebAssembly.instantiateStreaming = async (resp, importObject) => {
+				const source = await (await resp).arrayBuffer();
+				return await WebAssembly.instantiate(source, importObject);
+			};
+		}
+
+		const go = new Go();
+		WebAssembly.instantiateStreaming(
+			fetch("ebit.wasm"),
+			go.importObject,
+		).then((result) => {
+			go.run(result.instance);
+		});
+	};
+</script>
